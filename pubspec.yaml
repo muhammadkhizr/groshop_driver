@@ -1,0 +1,102 @@
+name: gromartdriver
+description: A new Flutter application.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.1+1
+
+environment:
+  sdk: ">=2.13.4 <3.0.0"
+
+dependencies:
+  audioplayers: ^1.1.1
+  cached_network_image: ^3.1.0
+  cloud_firestore: ^3.5.1
+  cupertino_icons: ^1.0.3
+  easy_localization: ^3.0.0
+  firebase_auth: ^3.11.2
+  firebase_core_platform_interface: 4.5.1
+  firebase_messaging: ^13.0.4
+  firebase_storage: ^10.3.11
+  firebase_core: ^1.24.0
+  firebase_crashlytics: ^2.8.13
+
+
+  flutter:
+    sdk: flutter
+  flutter_facebook_auth: ^3.5.0
+  flutter_native_image: ^0.0.6+1
+  flutter_polyline_points: ^1.0.0
+  flutter_sound: ^8.4.2
+  font_awesome_flutter: ^9.1.0
+  geoflutterfire:
+  geolocator: ^7.3.1
+  google_maps_flutter: ^2.0.6
+  http: ^0.13.3
+  image_picker: ^0.8.2
+  intl: ^0.17.0
+  intl_phone_number_input: ^0.7.0+2
+  latlong2: ^0.8.0
+  location: ^4.0.0
+  path_provider: ^2.0.2
+  permission_handler: ^8.1.4+1
+  photo_view: ^0.12.0
+  pin_code_fields: ^7.3.0
+  progress_dialog:
+    git:
+      url: https://github.com/mostafaAbdelazim/progress_dialog.git
+  provider: ^6.0.0
+  shared_preferences: ^2.0.6
+  smooth_page_indicator: ^0.3.0-nullsafety.0
+  the_apple_sign_in: ^1.1.1
+  url_launcher: ^6.1.6
+  uuid: ^3.0.4
+  video_compress: null
+  video_player: ^2.1.12
+  video_thumbnail: ^0.4.3
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.9.1
+  flutter_native_splash: ^2.2.13
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: 'assets/images/GroShop-app-icon.png'
+
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/GroShop-app-icon.png"
+  android: true
+  ios: true
+
+flutter:
+
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/flags/
+    - assets/translations/
+    - assets/fonts/
+    - assets/audio/
+
+  fonts:
+    - family: Poppinsb
+      fonts:
+        - asset: assets/fonts/Poppins-Bold.ttf
+
+    - family: Poppinsl
+      fonts:
+        - asset: assets/fonts/Poppins-Light.ttf
+
+    - family: Poppinsm
+      fonts:
+        - asset: assets/fonts/Poppins-Medium.ttf
+
+    - family: Poppinsr
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
+
+    - family: Poppinssb
+      fonts:
+        - asset: assets/fonts/Poppins-SemiBold.ttf
