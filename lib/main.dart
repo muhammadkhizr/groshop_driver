@@ -249,10 +249,11 @@ class OnBoardingState extends State<OnBoarding> {
   Future hasFinishedOnBoarding() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool finishedOnBoarding = (prefs.getBool(FINISHED_ON_BOARDING) ?? false);
-
     if (finishedOnBoarding) {
       auth.User? firebaseUser = auth.FirebaseAuth.instance.currentUser;
       if (firebaseUser != null) {
+        context.read<UserProvider>().userStream(firebaseUser.uid);
+
         User? user = await FireStoreUtils.getCurrentUser(firebaseUser.uid);
         print('\x1b[92m Driver  : $user');
         print('\x1b[92m Driver Active  : ${user!.active}');

@@ -72,7 +72,10 @@ class _ContainerScreen extends State<ContainerScreen> {
         if (mounted) setState(() {});
       },
     );
-    updateCurrentLocation();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<UserProvider>().userStream(widget.user.userID);
+      updateCurrentLocation();
+    });
 
     /// On iOS, we request notification permissions, Does nothing and returns null on Android
     FireStoreUtils.firebaseMessaging.requestPermission(
@@ -98,16 +101,29 @@ class _ContainerScreen extends State<ContainerScreen> {
       print("---->");
       location.enableBackgroundMode(enable: true);
       location.changeSettings(interval: 60000);
-      location.onLocationChanged.listen((locationData) {
+      location.onLocationChanged.listen((locationData) async {
         currentLocation = locationData;
-        UserLocation location = UserLocation(latitude: currentLocation.latitude!.toDouble(), longitude: currentLocation.longitude!.toDouble());
+        UserLocation location = UserLocation(
+            latitude: currentLocation.latitude!.toDouble(),
+            longitude: currentLocation.longitude!.toDouble());
         // if(!mounted)return;
-        MyAppState.currentUser = Provider.of<UserProvider>(context,listen: false).currentUser;
+        if (Provider.of<UserProvider>(context, listen: false).currentUser ==
+            null) {
+          await Future.delayed(Duration(seconds: 1));
+          return updateCurrentLocation();
+        }
+        MyAppState.currentUser =
+            Provider.of<UserProvider>(context, listen: false).currentUser;
         MyAppState.currentUser!.location = location;
         MyAppState.currentUser!.rotation = currentLocation.heading;
         MyAppState.currentUser!.geoFireData = GeoFireData(
-            geohash: Geoflutterfire().point(latitude: locationData.latitude!.toDouble(), longitude: locationData.longitude!.toDouble()).hash,
-            geoPoint: GeoPoint(locationData.latitude!.toDouble(), locationData.longitude!.toDouble()));
+            geohash: Geoflutterfire()
+                .point(
+                    latitude: locationData.latitude!.toDouble(),
+                    longitude: locationData.longitude!.toDouble())
+                .hash,
+            geoPoint: GeoPoint(locationData.latitude!.toDouble(),
+                locationData.longitude!.toDouble()));
         // log("MK: update user in main: 101: ${MyAppState.currentUser!.walletAmount} and ${context.watch<UserProvider>().currentUser!.walletAmount}");
         FireStoreUtils.updateCurrentUser(MyAppState.currentUser!);
       });
@@ -117,16 +133,30 @@ class _ContainerScreen extends State<ContainerScreen> {
           print("---->");
           location.enableBackgroundMode(enable: true);
           location.changeSettings(interval: 60000);
-          location.onLocationChanged.listen((locationData) {
+          location.onLocationChanged.listen((locationData) async {
             currentLocation = locationData;
-            UserLocation location = UserLocation(latitude: currentLocation.latitude!.toDouble(), longitude: currentLocation.longitude!.toDouble());
+            UserLocation location = UserLocation(
+                latitude: currentLocation.latitude!.toDouble(),
+                longitude: currentLocation.longitude!.toDouble());
+
+            if (Provider.of<UserProvider>(context, listen: false).currentUser ==
+                null) {
+              await Future.delayed(Duration(seconds: 1));
+              return updateCurrentLocation();
+            }
+
             MyAppState.currentUser = context.read<UserProvider>().currentUser;
 
             MyAppState.currentUser!.location = location;
             MyAppState.currentUser!.rotation = currentLocation.heading;
             MyAppState.currentUser!.geoFireData = GeoFireData(
-                geohash: Geoflutterfire().point(latitude: locationData.latitude!.toDouble(), longitude: locationData.longitude!.toDouble()).hash,
-                geoPoint: GeoPoint(locationData.latitude!.toDouble(), locationData.longitude!.toDouble()));
+                geohash: Geoflutterfire()
+                    .point(
+                        latitude: locationData.latitude!.toDouble(),
+                        longitude: locationData.longitude!.toDouble())
+                    .hash,
+                geoPoint: GeoPoint(locationData.latitude!.toDouble(),
+                    locationData.longitude!.toDouble()));
             FireStoreUtils.updateCurrentUser(MyAppState.currentUser!);
           });
         }
@@ -166,7 +196,9 @@ class _ContainerScreen extends State<ContainerScreen> {
           builder: (context, user, _) {
             return Scaffold(
               drawer: Drawer(
-                backgroundColor: isDarkMode(context) ? Color(DARK_VIEWBG_COLOR) : Colors.white,
+                backgroundColor: isDarkMode(context)
+                    ? Color(DARK_VIEWBG_COLOR)
+                    : Colors.white,
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
@@ -175,7 +207,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            displayCircleImage(user.profilePictureURL, 75, false),
+                            displayCircleImage(
+                                user.profilePictureURL, 75, false),
                             Padding(
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
@@ -197,7 +230,8 @@ class _ContainerScreen extends State<ContainerScreen> {
                                   builder: (context, snapshot) {
                                     return ListView.builder(
                                         itemCount: snapshot.data!.length,
-                                        itemBuilder: (BuildContext context, int index) {
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
                                           return curcy(snapshot.data![index]);
                                         });
                                   }),
@@ -303,12 +337,11 @@ class _ContainerScreen extends State<ContainerScreen> {
                             _drawerSelection = DrawerSelection.Profile;
                             _appBarTitle = 'myProfile'.tr();
                             _currentWidget = Consumer<UserProvider>(
-                              builder: (context, pro, _) {
-                                return ProfileScreen(
-                                  user: pro.currentUser!,
-                                );
-                              }
-                            );
+                                builder: (context, pro, _) {
+                              return ProfileScreen(
+                                user: pro.currentUser!,
+                              );
+                            });
                           });
                         },
                       ),
@@ -317,14 +350,16 @@ class _ContainerScreen extends State<ContainerScreen> {
                       style: ListTileStyle.drawer,
                       selectedColor: Color(COLOR_PRIMARY),
                       child: ListTile(
-                        selected: _drawerSelection == DrawerSelection.chooseLanguage,
+                        selected:
+                            _drawerSelection == DrawerSelection.chooseLanguage,
                         leading: Icon(
                           Icons.language,
-                          color: _drawerSelection == DrawerSelection.chooseLanguage
-                              ? Color(COLOR_PRIMARY)
-                              : isDarkMode(context)
-                                  ? Colors.grey.shade200
-                                  : Colors.grey.shade600,
+                          color:
+                              _drawerSelection == DrawerSelection.chooseLanguage
+                                  ? Color(COLOR_PRIMARY)
+                                  : isDarkMode(context)
+                                      ? Colors.grey.shade200
+                                      : Colors.grey.shade600,
                         ),
                         title: const Text('language').tr(),
                         onTap: () {
@@ -366,11 +401,14 @@ class _ContainerScreen extends State<ContainerScreen> {
                 iconTheme: IconThemeData(
                   color: isDarkMode(context) ? Colors.white : Colors.black,
                 ),
-                centerTitle: _drawerSelection == DrawerSelection.Wallet ? true : false,
-                backgroundColor: isDarkMode(context) ? Color(DARK_VIEWBG_COLOR) : Colors.white,
+                centerTitle:
+                    _drawerSelection == DrawerSelection.Wallet ? true : false,
+                backgroundColor: isDarkMode(context)
+                    ? Color(DARK_VIEWBG_COLOR)
+                    : Colors.white,
                 actions: [
                   if (_currentWidget is HomeScreen &&
-                      MyAppState.currentUser!=null &&
+                      MyAppState.currentUser != null &&
                       MyAppState.currentUser!.isActive &&
                       MyAppState.currentUser!.orderRequestData == null &&
                       MyAppState.currentUser!.inProgressOrderID == null)
@@ -380,10 +418,12 @@ class _ContainerScreen extends State<ContainerScreen> {
                           color: Colors.red,
                         ),
                         onPressed: () async {
-                          MyAppState.currentUser = context.read<UserProvider>().currentUser;
+                          MyAppState.currentUser =
+                              context.read<UserProvider>().currentUser;
                           MyAppState.currentUser!.isActive = false;
                           setState(() {});
-                          await FireStoreUtils.updateCurrentUser(MyAppState.currentUser!);
+                          await FireStoreUtils.updateCurrentUser(
+                              MyAppState.currentUser!);
                         }),
                 ],
                 title: Text(
